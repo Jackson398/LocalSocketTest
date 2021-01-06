@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">LocalSocketClientTest</string>
+    <string name="btn_accept">等待连接</string>
+</resources>

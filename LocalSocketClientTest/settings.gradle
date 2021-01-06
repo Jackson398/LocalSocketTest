@@ -1,0 +1,4 @@
+include ':mylib'
+include ':app:lib'
+include ':app'
+rootProject.name = "LocalSocketClientTest"
