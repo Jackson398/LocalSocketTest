@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.provider.ContactsContract;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -20,13 +19,10 @@ import com.aite.mylib.model.LocalSocketConst;
 import com.aite.mylib.model.PacketData;
 
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.List;
 
 public class LocalSocketServerItemAct extends Activity {
     private static final String TAG = "LocalSocketServerItemAct";
     private TextView tvState = null;
-    private TextView tvIp = null;
     private EditText etSend = null;
     private Button btnSend = null;
 
@@ -57,15 +53,13 @@ public class LocalSocketServerItemAct extends Activity {
                     break;
 
                 case CONNECT_SUCCESS:
-                    tvIp.setText("客户端" + msg.obj + "已连接");
                     displayToast("连接成功");
+                    tvState.setText("已经连接");
                     break;
-
                 case DISCONNECT:
                     displayToast("连接已断开");
                     //清空TextView
                     tvState.setText(null);
-                    tvIp.setText(null);
                     btnSend.setEnabled(false);
                     break;
 
@@ -87,8 +81,6 @@ public class LocalSocketServerItemAct extends Activity {
     }
 
     private void initView() {
-
-        tvIp = (TextView) findViewById(R.id.tv_ip);
         etSend = (EditText) findViewById(R.id.et_send);
         tvState = (TextView) findViewById(R.id.tv_state);
         btnSend = (Button) findViewById(R.id.btn_send);

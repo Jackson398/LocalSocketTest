@@ -1,4 +1,4 @@
-package com.aite.localsocketclienttest.ui;
+package com.aite.localsocketclienttest02;
 
 import android.app.Activity;
 import android.content.Context;
@@ -17,7 +17,6 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
-import com.aite.localsocketclienttest.R;
 import com.aite.mylib.manager.LocalServerSocketManager;
 import com.aite.mylib.model.LocalSocketConst;
 import com.aite.mylib.model.PacketData;
@@ -231,7 +230,7 @@ public class LocalSocketClientAct extends Activity implements View.OnClickListen
                     try {
                         if (sendData.size() > 0) {
                             PacketData data = sendData.remove(0);
-                            Log.d(TAG, getSocketId() + data.toString());
+                            Log.d(TAG,  getSocketId() + data.toString());
                             byte[] datas = new byte[1];
                             datas[0] = data.type;
                             os.write(datas);
@@ -240,7 +239,7 @@ public class LocalSocketClientAct extends Activity implements View.OnClickListen
                             }
                             os.flush();
                         }
-                        if (sendData.size() == 0) {
+                        if(sendData.size()==0){
                             try {
                                 sleep(50000);
                             } catch (InterruptedException e) {
@@ -307,6 +306,6 @@ public class LocalSocketClientAct extends Activity implements View.OnClickListen
     }
 
     private String getSocketId() {
-        return "LocalSocketClient01";
+       return "LocalSocketClient02";
     }
 }
