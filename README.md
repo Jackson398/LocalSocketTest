@@ -40,7 +40,7 @@
 	7.关闭socket　　　　　　　　　　　　　　　　　　　　　  5.关闭socket
 
 	数据流：
-	![image](https://images0.cnblogs.com/blog2015/746143/201508/061717107845571.png)
+	![image](./screenshot/061717107845571.png.png)
 
 	二、Android LocalSocket
 
