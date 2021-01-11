@@ -1,0 +1,3 @@
+include ':udpLib'
+include ':app'
+rootProject.name = "UdpSocketClientTest"
