@@ -26,7 +26,7 @@ public class ClientUdpSocket {
     private static final int BUFFER_LENGTH = 1024;
     private byte[] receiveByte = new byte[BUFFER_LENGTH];
 
-    private static final String BROADCAST_IP = "192.168.1.107";
+    private static final String BROADCAST_IP = "192.168.1.255";
 
     // 端口号
     public static final int CLIENT_PORT = 65432;
