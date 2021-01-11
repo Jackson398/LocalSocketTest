@@ -7,6 +7,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.aite.udplib.api.UdpApi;
+import com.aite.udplib.api.UdpScheduler;
 import com.aite.udplib.socket.ClientUdpSocket;
 
 public class UdpSocketClientAct extends AppCompatActivity {
@@ -52,7 +54,7 @@ public class UdpSocketClientAct extends AppCompatActivity {
         mSendMessageBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                socket.sendMessage(mInputMessageEt.getText().toString());
+                socket.sendMessage(UdpScheduler.getPostMessage(UdpApi.Companion.sendJson(), mInputMessageEt.getText().toString(), 1));
             }
         });
     }

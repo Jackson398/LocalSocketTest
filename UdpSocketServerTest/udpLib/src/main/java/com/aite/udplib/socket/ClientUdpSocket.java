@@ -4,8 +4,14 @@ import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.aite.udplib.api.IApi;
+import com.aite.udplib.api.ParamType;
+import com.aite.udplib.api.UdpApi;
+import com.aite.udplib.api.UdpScheduler;
+import com.aite.udplib.data.PacketData;
 import com.aite.udplib.data.User;
 import com.aite.udplib.utils.DeviceUtil;
+import com.aite.udplib.utils.JsonUtil;
 import com.aite.udplib.utils.WifiUtil;
 
 import java.io.IOException;
@@ -142,6 +148,12 @@ public class ClientUdpSocket {
 
             String strReceive = new String(receivePacket.getData(), 0, receivePacket.getLength());
             Log.d(TAG, strReceive + " from " + receivePacket.getAddress().getHostAddress() + ":" + receivePacket.getPort());
+            PacketData result = JsonUtil.toBean(strReceive, PacketData.class);
+            if (result.data.type == 0) { // 心跳包
+                Log.d(TAG, "Get Heart Beat");
+            } else if (result.data.type == 1) { // 普通信息
+                Log.d(TAG, "Get No Heart Beat");
+            } // 兜底
 
             //解析接收到的 json 信息
 
@@ -168,8 +180,7 @@ public class ClientUdpSocket {
                     // 刷新时间，重新进入下一个心跳周期
                     lastReceiveTime = System.currentTimeMillis();
                 } else if (duration > HEARTBEAT_MESSAGE_DURATION) {//若超过十秒他没收到我的心跳包，则重新发一个。
-                    String string = "hello,this is a heartbeat message";
-                    sendMessage(string);
+                    sendMessage(UdpScheduler.getPostMessage(UdpApi.Companion.sendJson(), "", 0));
                 }
             }
         });
