@@ -3,6 +3,8 @@ package com.aite.udplib.socket;
 import android.content.Context;
 import android.util.Log;
 
+import com.aite.udplib.api.UdpApi;
+import com.aite.udplib.api.UdpScheduler;
 import com.aite.udplib.data.User;
 
 import java.io.IOException;
@@ -111,6 +113,7 @@ public class ServerUdpSocket {
 
             String strReceive = new String(receivePacket.getData(), 0, receivePacket.getLength());
             Log.d(TAG, strReceive + " from " + receivePacket.getAddress().getHostAddress() + ":" + receivePacket.getPort());
+            UdpScheduler.notifyLiveDataChanged(UdpApi.Companion.sendJson(), strReceive);
 
             //解析接收到的 json 信息
 
