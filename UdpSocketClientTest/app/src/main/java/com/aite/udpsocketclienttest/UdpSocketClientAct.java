@@ -1,67 +1,91 @@
 package com.aite.udpsocketclienttest;
 
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.annotation.Nullable;
+import androidx.databinding.ViewDataBinding;
 
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
 
+import com.aite.commonlib.base.BaseAct;
+import com.aite.commonlib.contract.UdpSocketContract;
 import com.aite.udplib.api.UdpApi;
 import com.aite.udplib.api.UdpScheduler;
-import com.aite.udplib.socket.ClientUdpSocket;
+import com.aite.udpsocketclienttest.databinding.UdpSocketClientActBinding;
+import com.aite.udpsocketclienttest.presenter.UdpSocketClientPresenter;
 
-public class UdpSocketClientAct extends AppCompatActivity {
+public class UdpSocketClientAct extends BaseAct implements UdpSocketContract.View {
     private final static String TAG = "UdpSocketClientAct";
 
-    private ClientUdpSocket socket;
+    private UdpSocketClientActBinding mBinding;
 
-    private Button mBuildLinkBtn;
-
-    private Button mSendMessageBtn;
-
-    private EditText mInputMessageEt;
+    private UdpSocketClientPresenter mPresenter;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.udp_socket_client_act);
-        initView();
-        initData();
-        initListeners();
-    }
-
-    private void initView() {
-        mBuildLinkBtn = (Button) findViewById(R.id.bt_connect);
-        mInputMessageEt = (EditText) findViewById(R.id.et_message);
-        mSendMessageBtn = (Button) findViewById(R.id.bt_send);
-        mBuildLinkBtn.setEnabled(true);
-        mSendMessageBtn.setEnabled(false);
-        mInputMessageEt.setEnabled(false);
-    }
-
-    private void initData() {
-    }
-
-    private void initListeners() {
-        mBuildLinkBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                socket = new ClientUdpSocket(UdpSocketClientAct.this);
-                socket.startUdpSocket();
-            }
+        mBinding.btBuildConnect.setOnClickListener(v -> {
+            showBaseProgressDlg("正在udp连接");
+            mPresenter.startBuildLink();
         });
-        mSendMessageBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                socket.sendMessage(UdpScheduler.getPostMessage(UdpApi.Companion.sendJson(), mInputMessageEt.getText().toString(), 1));
-            }
+        mBinding.btSend.setOnClickListener(v -> {
+            mPresenter.sendMessage(UdpScheduler.getPostMessage(UdpApi.Companion.sendJson(), mBinding.etMessage.getText().toString(), 1));
         });
+    }
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.udp_socket_client_act;
+    }
+
+    @Override
+    protected void initBinding(ViewDataBinding binding) {
+        mBinding = (UdpSocketClientActBinding) binding;
+    }
+
+    @Override
+    public void setPresenter(UdpSocketContract.Presenter presenter) {
+        mPresenter = new UdpSocketClientPresenter(this);
+    }
+
+    @Override
+    protected void initPresenter() {
+        mPresenter = new UdpSocketClientPresenter(this);
+        mPresenter.install(this);
+    }
+
+    @Override
+    public void setPanelMsg(String appendMsg) {
+        mBinding.recvDataId.append(appendMsg + "\n");
+    }
+
+    @Override
+    public void showBaseProgressDlg(String msg) {
+        super.showBaseProgressDlg(msg);
+    }
+
+    @Override
+    public void setBuildLinkBtnState(boolean enable) {
+        if (enable) {
+            mBinding.btBuildConnect.setAlpha(1.0f);
+            mBinding.btBuildConnect.setEnabled(true);
+        } else {
+            mBinding.btBuildConnect.setAlpha(0.7f);
+            mBinding.btBuildConnect.setEnabled(false);
+        }
+    }
+
+    @Override
+    public void closeProgressDlg() {
+        closeBaseProgressDlg();
+    }
+
+    @Override
+    public void onTimeOut() {
+        setBuildLinkBtnState(true);
+        closeProgressDlg();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        socket.stopUdpSocket();
     }
 }
