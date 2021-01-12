@@ -45,7 +45,6 @@ public class JsonUtil {
             e.printStackTrace();
             Log.e(TAG, "toBean: json=" + json);
         }
-
         return t;
     }
 

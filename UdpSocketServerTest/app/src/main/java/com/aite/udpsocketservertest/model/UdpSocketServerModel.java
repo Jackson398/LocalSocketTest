@@ -1,12 +1,12 @@
-package com.aite.udpsocketclienttest.model;
+package com.aite.udpsocketservertest.model;
 
 import android.content.Context;
 
 import com.aite.commonlib.base.BaseModel;
 import com.aite.udplib.data.PacketData;
 import com.aite.udplib.rx.RxBus;
-import com.aite.udplib.socket.ClientUdpSocket;
-import com.aite.udpsocketclienttest.presenter.UdpSocketClientPresenter;
+import com.aite.udplib.socket.ServerUdpSocket;
+import com.aite.udpsocketservertest.presenter.UdpSocketServerPresenter;
 
 import java.util.concurrent.TimeUnit;
 
@@ -15,16 +15,16 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-public class UdpSocketClientModel extends BaseModel<UdpSocketClientPresenter> {
+public class UdpSocketServerModel extends BaseModel<UdpSocketServerPresenter> {
     private Disposable mDisposable;
 
-    private ClientUdpSocket socket;
+    private ServerUdpSocket socket;
 
     private Context mCotext;
 
     private boolean isConnecting = false;
 
-    public UdpSocketClientModel(UdpSocketClientPresenter presenter) {
+    public UdpSocketServerModel(UdpSocketServerPresenter presenter) {
         super(presenter);
     }
 
@@ -53,16 +53,16 @@ public class UdpSocketClientModel extends BaseModel<UdpSocketClientPresenter> {
                     }
                 });
         addDisposable(disposable);
-        socket = new ClientUdpSocket(mContext);
+        socket = new ServerUdpSocket(mContext);
         socket.startUdpSocket();
     }
 
     public void sendMessage(String msg) {
-        socket.sendMessage(msg);
+        // todo
     }
 
     public void loadTimeOut() {
-        mDisposable = Observable.timer(10, TimeUnit.SECONDS)
+        mDisposable = Observable.timer(10, TimeUnit.MINUTES)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(count -> {
                     mPresenter.onTimeOut();

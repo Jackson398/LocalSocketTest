@@ -28,6 +28,7 @@ public class UdpSocketClientAct extends BaseAct implements UdpSocketContract.Vie
         });
         mBinding.btSend.setOnClickListener(v -> {
             mPresenter.sendMessage(UdpScheduler.getPostMessage(UdpApi.Companion.sendJson(), mBinding.etMessage.getText().toString(), 1));
+            mBinding.etMessage.setText("");
         });
     }
 

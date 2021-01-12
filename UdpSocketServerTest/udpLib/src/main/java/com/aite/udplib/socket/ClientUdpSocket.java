@@ -6,6 +6,7 @@ import android.widget.Toast;
 
 import com.aite.udplib.api.IApi;
 import com.aite.udplib.api.ParamType;
+import com.aite.udplib.api.ProtocolType;
 import com.aite.udplib.api.UdpApi;
 import com.aite.udplib.api.UdpScheduler;
 import com.aite.udplib.data.PacketData;
@@ -123,6 +124,17 @@ public class ClientUdpSocket {
         startHeartbeatTimer();
     }
 
+    private PacketData getLinkFailPacketData() {
+        PacketData packetData = new PacketData();
+        packetData.paramType = ParamType.json;
+        packetData.protocolType = ProtocolType.APP_JSON;
+        PacketData.MessageData messageData = new PacketData.MessageData();
+        messageData.type = 2; // 连接断开
+        messageData.content = "";
+        packetData.data = messageData;
+        return packetData;
+    }
+
     /**
      * 处理接受到的消息
      */
@@ -137,23 +149,20 @@ public class ClientUdpSocket {
             } catch (IOException e) {
                 Log.e(TAG, "UDP数据包接收失败！线程停止");
                 stopUdpSocket();
+                UdpScheduler.notifyLiveDataChanged(UdpApi.Companion.sendJson(), JsonUtil.toJsonString(getLinkFailPacketData()));
                 e.printStackTrace();
                 return;
             }
 
             if (receivePacket == null || receivePacket.getLength() == 0) {
                 Log.e(TAG, "无法接收UDP数据或者接收到的UDP数据为空");
+                UdpScheduler.notifyLiveDataChanged(UdpApi.Companion.sendJson(), JsonUtil.toJsonString(getLinkFailPacketData()));
                 continue;
             }
 
             String strReceive = new String(receivePacket.getData(), 0, receivePacket.getLength());
             Log.d(TAG, strReceive + " from " + receivePacket.getAddress().getHostAddress() + ":" + receivePacket.getPort());
-            PacketData result = JsonUtil.toBean(strReceive, PacketData.class);
-            if (result.data.type == 0) { // 心跳包
-                Log.d(TAG, "Get Heart Beat");
-            } else if (result.data.type == 1) { // 普通信息
-                Log.d(TAG, "Get No Heart Beat");
-            } // 兜底
+            UdpScheduler.notifyLiveDataChanged(UdpApi.Companion.sendJson(), strReceive);
 
             //解析接收到的 json 信息
 
@@ -179,6 +188,7 @@ public class ClientUdpSocket {
                     Log.d(TAG, "超时，对方已经下线");
                     // 刷新时间，重新进入下一个心跳周期
                     lastReceiveTime = System.currentTimeMillis();
+                    UdpScheduler.notifyLiveDataChanged(UdpApi.Companion.sendJson(), JsonUtil.toJsonString(getLinkFailPacketData()));
                 } else if (duration > HEARTBEAT_MESSAGE_DURATION) {//若超过十秒他没收到我的心跳包，则重新发一个。
                     sendMessage(UdpScheduler.getPostMessage(UdpApi.Companion.sendJson(), "", 0));
                 }

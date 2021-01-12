@@ -1,12 +1,16 @@
 package com.aite.udplib.data;
 
 import com.aite.udplib.api.ParamType;
+import com.aite.udplib.api.ProtocolType;
 
 public class PacketData {
     private static final String TAG = "PacketData";
 
     @ParamType
-    public int paramType;
+    public int paramType;  // 请求类型
+
+    @ProtocolType
+    public String protocolType; // 响应类型
 
     public MessageData data;
 
@@ -14,6 +18,7 @@ public class PacketData {
     public String toString() {
         return "PacketData{" +
                 "paramType=" + paramType +
+                ", protocolType='" + protocolType + '\'' +
                 ", data=" + data +
                 '}';
     }
